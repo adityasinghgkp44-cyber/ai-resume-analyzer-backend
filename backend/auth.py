@@ -2,30 +2,31 @@ import jwt
 from flask import request, jsonify
 from functools import wraps
 
-SECRET_KEY = "SECRET_KEY"  # Change this to a secure key in production
-
+SECRET_KEY = "SECRET_KEY"
 
 def token_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
 
-        token = request.headers.get("Authorization")
+        auth_header = request.headers.get("Authorization")
 
-        if not token:
+        if not auth_header:
             return jsonify({
                 "error": "Token is missing"
             }), 401
 
         try:
+            token = auth_header.split(" ")[1]
+
             data = jwt.decode(
                 token,
                 SECRET_KEY,
                 algorithms=["HS256"]
             )
 
-        except:
+        except Exception as e:
             return jsonify({
-                "error": "Invalid token"
+                "error": f"Invalid token: {str(e)}"
             }), 401
 
         return f(data, *args, **kwargs)
