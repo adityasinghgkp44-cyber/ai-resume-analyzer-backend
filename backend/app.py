@@ -33,9 +33,9 @@ def login():
     if not user :
         return jsonify({ "error": "user not found" }), 404
     if bcrypt.check_password_hash(user['password'], password):
-        print("UTC Time:", datetime.datetime.utcnow())
-        print("Expiry:", datetime.datetime.utcnow() + datetime.timedelta(hours=24))
-        token = jwt.encode(
+       print("UTC Time:", datetime.now(timezone.utc))
+       print("Expiry:", datetime.now(timezone.utc) + timedelta(hours=24))
+    token = jwt.encode(
     {
         "email": email,
         "exp": datetime.now(timezone.utc) + timedelta(hours=24)
@@ -43,7 +43,7 @@ def login():
     app.config['SECRET_KEY'],
     algorithm="HS256"
                       )
-        return jsonify({
+    return jsonify({
 
     "success":True,
 
