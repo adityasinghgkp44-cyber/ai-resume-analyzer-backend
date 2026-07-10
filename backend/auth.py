@@ -25,9 +25,9 @@ def token_required(f):
             )
 
         except Exception as e:
-            return jsonify({
-                "error": f"Invalid token: {str(e)}"
-            }), 401
+         return jsonify({
+        "error": str(e)
+    }), 401
 
         return f(data, *args, **kwargs)
 

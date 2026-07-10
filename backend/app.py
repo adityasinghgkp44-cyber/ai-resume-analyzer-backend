@@ -11,7 +11,7 @@ from resume_parser import extract_text # Import the extract_text function from r
 from flask_bcrypt import Bcrypt
 from db import users_collection
 from db import resume_collection
-
+from datetime import datetime, timedelta, timezone
 from ats_service import calculate_ats_score
 from auth import token_required
 
@@ -33,12 +33,16 @@ def login():
     if not user :
         return jsonify({ "error": "user not found" }), 404
     if bcrypt.check_password_hash(user['password'], password):
-
-        token = jwt.encode({
-            "email": email,
-            "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=24)#Sets the token to expire in 24 hours from the current time.
-              }, app.config['SECRET_KEY'], algorithm="HS256")#Specifies the cryptographic algorithm used to sign the token.
-
+        print("UTC Time:", datetime.datetime.utcnow())
+        print("Expiry:", datetime.datetime.utcnow() + datetime.timedelta(hours=24))
+        token = jwt.encode(
+    {
+        "email": email,
+        "exp": datetime.now(timezone.utc) + timedelta(hours=24)
+    },
+    app.config['SECRET_KEY'],
+    algorithm="HS256"
+                      )
         return jsonify({
 
     "success":True,
