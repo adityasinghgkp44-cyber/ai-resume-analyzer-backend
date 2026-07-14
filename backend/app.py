@@ -58,7 +58,7 @@ def login():
         algorithm="HS256"
     )
 
-    print("Generated Token:", token)
+   
 
     return jsonify({
 
