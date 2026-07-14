@@ -1,6 +1,5 @@
 import os
 import json
-
 from dotenv import load_dotenv
 from google import genai
 
@@ -12,7 +11,6 @@ client = genai.Client(
 
 
 def analyze_resume(resume_text):
-
     prompt = f"""
 You are an ATS Resume Analyzer.
 
@@ -20,11 +18,11 @@ Analyze the following resume.
 
 Return ONLY valid JSON.
 
-Do NOT return markdown.
-Do NOT use ```json.
-Do NOT add explanations.
+Do not return markdown.
+Do not use ```json.
+Do not add explanations.
 
-Use this exact format:
+Return exactly this format:
 
 {{
     "ats_score": 0,
@@ -42,37 +40,26 @@ Resume:
 """
 
     try:
-
         response = client.models.generate_content(
             model="gemini-2.5-flash",
-            contents=prompt,
+            contents=prompt
         )
 
         response_text = response.text.strip()
 
-        try:
-            return json.loads(response_text)
+        if response_text.startswith("```json"):
+            response_text = response_text.replace("```json", "").replace("```", "").strip()
 
-        except Exception:
-
-            cleaned = (
-                response_text
-                .replace("```json", "")
-                .replace("```", "")
-                .strip()
-            )
-
-            return json.loads(cleaned)
+        return json.loads(response_text)
 
     except Exception as e:
-
         return {
-            "error": str(e),
             "ats_score": 0,
             "top_skills": [],
             "missing_skills": [],
             "strengths": [],
             "weaknesses": [],
             "suggestions": [],
-            "interview_questions": []
+            "interview_questions": [],
+            "error": str(e)
         }
