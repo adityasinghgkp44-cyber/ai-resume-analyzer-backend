@@ -26,47 +26,57 @@ bcrypt = Bcrypt(app)
 
 @app.route('/login', methods=['POST'])
 def login():
+
     data = request.json
-    email = data.get('email')
-    password = data.get('password')
-    user = users_collection.find_one({"email": email})
-    if not user :
-        return jsonify({ "error": "user not found" }), 404
-    if bcrypt.check_password_hash(user['password'], password):
-       print("UTC Time:", datetime.now(timezone.utc))
-       print("Expiry:", datetime.now(timezone.utc) + timedelta(hours=24))
+
+    email = data.get("email")
+    password = data.get("password")
+
+    user = users_collection.find_one({
+        "email": email
+    })
+
+    if not user:
+        return jsonify({
+            "error": "User not found"
+        }), 404
+
+    if not bcrypt.check_password_hash(user["password"], password):
+        return jsonify({
+            "error": "Invalid password"
+        }), 401
+
+    print("UTC Time:", datetime.now(timezone.utc))
+    print("Expiry:", datetime.now(timezone.utc) + timedelta(hours=24))
+
     token = jwt.encode(
-    {
-        "email": email,
-        "exp": datetime.now(timezone.utc) + timedelta(hours=24)
-    },
+        {
+            "email": email,
+            "exp": datetime.now(timezone.utc) + timedelta(hours=24)
+        },
+        app.config["SECRET_KEY"],
+        algorithm="HS256"
+    )
+
     print("Generated Token:", token)
-    app.config['SECRET_KEY'],
-    algorithm="HS256"
-   
-                      )
-    return jsonify({
-
-    "success":True,
-
-    "message":"Login Successful",
-
-    "data":{
-
-        "token":token,
-
-        "email":email,
-
-        "username":user["username"]
-
-    }
-
-})
 
     return jsonify({
-        "error": "Invalid password"
-    }), 401
 
+        "success": True,
+
+        "message": "Login Successful",
+
+        "data": {
+
+            "token": token,
+
+            "email": email,
+
+            "username": user["username"]
+
+        }
+
+    })
 @app.route('/register', methods = ['POST'])
 def register():
     data =request.json
