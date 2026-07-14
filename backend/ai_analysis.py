@@ -8,7 +8,7 @@ import json
 # Load environment variables
 load_dotenv()
 
-api_key = os.getenv("AIzaSyCXZYMZsv9b2mkEXStYyFM4C_eLTUZoI7o")
+api_key = os.getenv("GOOGLE_API_KEY")
 
 genai.configure(api_key=api_key)
 
