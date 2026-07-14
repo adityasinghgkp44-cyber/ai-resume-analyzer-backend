@@ -40,8 +40,10 @@ def login():
         "email": email,
         "exp": datetime.now(timezone.utc) + timedelta(hours=24)
     },
+    print("Generated Token:", token)
     app.config['SECRET_KEY'],
     algorithm="HS256"
+   
                       )
     return jsonify({
 
