@@ -1,59 +1,78 @@
-from urllib import response
-
-import google.generativeai as genai
-from dotenv import load_dotenv
 import os
 import json
 
-# Load environment variables
+from dotenv import load_dotenv
+from google import genai
+
 load_dotenv()
 
-api_key = os.getenv("GOOGLE_API_KEY")
-
-genai.configure(api_key=api_key)
-
-model = genai.GenerativeModel("gemini-2.5-flash-lite")
+client = genai.Client(
+    api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 
 def analyze_resume(resume_text):
 
     prompt = f"""
-    Analyze this resume.
+You are an ATS Resume Analyzer.
 
-    Return ONLY valid JSON.
-    Do not add markdown
-    Do not use '''json
-    do not add explanatoins
+Analyze the following resume.
 
-    Format:
+Return ONLY valid JSON.
 
-    {{
-      "ats_score": 0,
-      "top_skills": [],
-      "missing_skills": [],
-      "strengths": [],
-      "weaknesses": [],
-      "suggestions": [],
-      "interview_questions": []
-    }}
+Do NOT return markdown.
+Do NOT use ```json.
+Do NOT add explanations.
 
-    Resume:
-    {resume_text}
-    """
+Use this exact format:
 
-    response = model.generate_content(prompt)
+{{
+    "ats_score": 0,
+    "top_skills": [],
+    "missing_skills": [],
+    "strengths": [],
+    "weaknesses": [],
+    "suggestions": [],
+    "interview_questions": []
+}}
 
-    response_text = response.text
+Resume:
 
-    # Remove markdown formatting
-    response_text = response_text.replace("```json", "").replace("```", "").strip()
+{resume_text}
+"""
 
     try:
-        data = json.loads(response_text)
+
+        response = client.models.generate_content(
+            model="gemini-2.5-flash",
+            contents=prompt,
+        )
+
+        response_text = response.text.strip()
+
+        try:
+            return json.loads(response_text)
+
+        except Exception:
+
+            cleaned = (
+                response_text
+                .replace("```json", "")
+                .replace("```", "")
+                .strip()
+            )
+
+            return json.loads(cleaned)
+
     except Exception as e:
-        data = {
+
+        return {
             "error": str(e),
-            "raw_response": response_text
+            "ats_score": 0,
+            "top_skills": [],
+            "missing_skills": [],
+            "strengths": [],
+            "weaknesses": [],
+            "suggestions": [],
+            "interview_questions": []
         }
-        
-    return data
