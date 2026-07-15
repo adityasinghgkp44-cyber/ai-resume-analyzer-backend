@@ -145,6 +145,7 @@ def upload_resume(data): #function creation
     "resume_name": file.filename,
     "analysis": analysis,
     "skills": skills,
+    "roadmap": roadmap,
     "ats_score": ats_score,
     "email": data['email']
 })
