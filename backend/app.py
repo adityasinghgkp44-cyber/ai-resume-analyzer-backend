@@ -137,6 +137,9 @@ def upload_resume(data): #function creation
     ats_score = calculate_ats_score(resume_text)
     analysis = analyze_resume(resume_text)
     skills = extract_skills(resume_text)
+    roadmap = generate_roadmap(
+    analysis.get("missing_skills", [])
+)
 
     resume_collection.insert_one({
     "resume_name": file.filename,
@@ -146,10 +149,10 @@ def upload_resume(data): #function creation
     "email": data['email']
 })
     return jsonify({
-    "message": "Resume uploaded successfully",
+    
         "analysis": analysis,
     "skills": skills,
-     "ats_score": ats_score,
+    "roadmap": roadmap
      })
     
 
