@@ -12,7 +12,7 @@ if not GOOGLE_API_KEY:
 
 client = genai.Client(api_key=GOOGLE_API_KEY)
 
-MODEL_NAME = "models/gemini-3.5-flash"
+MODEL_NAME = "models/gemini-2.5-flash"
 
 
 def analyze_resume(resume_text):
