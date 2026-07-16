@@ -1,22 +1,16 @@
 import os
 from dotenv import load_dotenv
-from openai import OpenAI
+from google import genai
 
 load_dotenv()
 
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")
+print("API Key:", os.getenv("GOOGLE_API_KEY")[:10], "...")
+
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
+
+response = client.models.generate_content(
+    model="models/gemini-3.1-flash-lite",
+    contents="Reply with only OK"
 )
 
-response = client.chat.completions.create(
-    model="openai/gpt-oss-20b:free",
-    messages=[
-        {
-            "role": "user",
-            "content": "Reply with exactly: OpenRouter Working"
-        }
-    ]
-)
-
-print(response.choices[0].message.content)
+print(response.text)
