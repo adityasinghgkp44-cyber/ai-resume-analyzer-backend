@@ -1,30 +1,40 @@
 import os
 import json
+import time
 from dotenv import load_dotenv
-from google import genai
+from openai import OpenAI
 
 load_dotenv()
 
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+API_KEY = os.getenv("OPENROUTER_API_KEY")
 
-if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY not found in .env")
+if not API_KEY:
+    raise ValueError("OPENROUTER_API_KEY not found in .env")
 
-client = genai.Client(api_key=GOOGLE_API_KEY)
-MODEL_NAME = "models/gemini-2.0-flash"
+client = OpenAI(
+    base_url="https://openrouter.ai/api/v1",
+    api_key=API_KEY,
+)
+
+MODEL_NAME = "openai/gpt-oss-20b:free"
+
 
 def analyze_resume(resume_text):
-    
+
+    resume_text = resume_text[:12000]
+
     prompt = f"""
-You are an ATS Resume Analyzer.
+You are an expert ATS Resume Analyzer.
 
-Analyze the following resume and return ONLY valid JSON.
+Analyze the following resume.
 
-Do not use markdown.
-Do not use ```json.
-Do not add any explanation.
+Return ONLY valid JSON.
 
-Return exactly this format:
+DO NOT use markdown.
+DO NOT use ```json.
+DO NOT explain anything.
+
+Return exactly this JSON format:
 
 {{
     "ats_score": 0,
@@ -36,47 +46,112 @@ Return exactly this format:
     "interview_questions": []
 }}
 
+Rules:
+
+1. ATS score must be between 0-100.
+
+2. Top skills:
+- Maximum 10 skills.
+- Only technology names.
+
+3. Missing skills:
+- Only individual technologies.
+Correct:
+["Docker","MongoDB","AWS","CI/CD","TypeScript"]
+
+Wrong:
+["Cloud Platforms (AWS/GCP/Azure)"]
+
+4. Strengths:
+Exactly 4 points.
+
+5. Weaknesses:
+Exactly 3 points.
+
+6. Suggestions:
+Exactly 5 actionable suggestions.
+
+7. Interview Questions:
+Exactly 5 interview questions.
+
 Resume:
+
 {resume_text}
 """
 
-    try:
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=prompt,
-        )
+    for attempt in range(3):
 
-        response_text = response.text.strip()
+        try:
 
-        if response_text.startswith("```json"):
-            response_text = (
-                response_text.replace("```json", "")
-                .replace("```", "")
-                .strip()
+            response = client.chat.completions.create(
+                model=MODEL_NAME,
+                messages=[
+                    {
+                        "role": "system",
+                        "content": (
+                            "You are a professional ATS Resume Analyzer. "
+                            "Always respond ONLY with valid JSON."
+                        )
+                    },
+                    {
+                        "role": "user",
+                        "content": prompt
+                    }
+                ],
+                temperature=0.2,
             )
 
-        return json.loads(response_text)
+            response_text = response.choices[0].message.content.strip()
 
-    except json.JSONDecodeError:
-        return {
-            "ats_score": 0,
-            "top_skills": [],
-            "missing_skills": [],
-            "strengths": [],
-            "weaknesses": [],
-            "suggestions": [],
-            "interview_questions": [],
-            "error": "AI returned invalid JSON"
-        }
+            if response_text.startswith("```json"):
+                response_text = (
+                    response_text
+                    .replace("```json", "")
+                    .replace("```", "")
+                    .strip()
+                )
 
-    except Exception as e:
-        return {
-            "ats_score": 0,
-            "top_skills": [],
-            "missing_skills": [],
-            "strengths": [],
-            "weaknesses": [],
-            "suggestions": [],
-            "interview_questions": [],
-            "error": str(e)
-        }
+            if response_text.startswith("```"):
+                response_text = (
+                    response_text
+                    .replace("```", "")
+                    .strip()
+                )
+
+            analysis = json.loads(response_text)
+
+            return analysis
+
+        except json.JSONDecodeError:
+
+            if attempt < 2:
+                time.sleep(2)
+                continue
+
+            return {
+                "ats_score": 0,
+                "top_skills": [],
+                "missing_skills": [],
+                "strengths": [],
+                "weaknesses": [],
+                "suggestions": [],
+                "interview_questions": [],
+                "error": "AI returned invalid JSON"
+            }
+
+        except Exception as e:
+
+            if attempt < 2:
+                time.sleep(2)
+                continue
+
+            return {
+                "ats_score": 0,
+                "top_skills": [],
+                "missing_skills": [],
+                "strengths": [],
+                "weaknesses": [],
+                "suggestions": [],
+                "interview_questions": [],
+                "error": str(e)
+            }
