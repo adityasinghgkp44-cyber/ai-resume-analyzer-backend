@@ -11,9 +11,7 @@ if not GOOGLE_API_KEY:
     raise ValueError("GOOGLE_API_KEY not found in .env")
 
 client = genai.Client(api_key=GOOGLE_API_KEY)
-
-MODEL_NAME = "models/gemini-2.5-flash"
-
+MODEL_NAME = "models/gemini-2.0-flash"
 
 def analyze_resume(resume_text):
     
