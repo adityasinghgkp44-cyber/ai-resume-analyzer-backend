@@ -4,7 +4,7 @@ from utils.candidate_classifier import detect_candidate_type
 from roadmap_service import generate_roadmap
 import jwt
 import datetime
-from jd_matcher import match_resume_with_jd
+#from jd_matcher import match_resume_with_jd
 from ai_analysis import analyze_resume # Import the analyze_resume function from ai_analysis.py
 from flask import Flask, request, jsonify
 import os
@@ -242,7 +242,7 @@ def get_history(data):
     return jsonify({
         "history": history
     })
-@app.route('/match-jd', methods=['POST'])
+'''@app.route('/match-jd', methods=['POST'])
 def match_jd():
 
     data = request.json
@@ -261,7 +261,7 @@ def match_jd():
 
 )
     
-    return jsonify(result)
+    return jsonify(result)'''
 
 @app.route('/roadmap', methods=['POST'])
 def roadmap():
