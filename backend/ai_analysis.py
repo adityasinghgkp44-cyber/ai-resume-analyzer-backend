@@ -8,39 +8,50 @@ load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 
 if not GOOGLE_API_KEY:
-    raise ValueError("GOOGLE_API_KEY not found in .env")
+    raise ValueError("GOOGLE_API_KEY not found")
 
 client = genai.Client(api_key=GOOGLE_API_KEY)
+
 MODEL_NAME = "models/gemini-3.1-flash-lite"
 
+
 def analyze_resume(resume_text):
-    
+
     prompt = f"""
-You are an ATS Resume Analyzer.
+You are an expert ATS Resume Reviewer.
 
-Analyze the following resume and return ONLY valid JSON.
+Analyze the resume and return ONLY valid JSON.
 
-Do not use markdown.
-Do not use ```json.
-Do not add any explanation.
+Rules:
+- Return ONLY JSON.
+- No markdown.
+- No explanation.
+- No code block.
+- Always return every field.
+- If nothing is found, return an empty array.
 
 Return exactly this format:
 
 {{
-    "ats_score": 0,
-    "top_skills": [],
-    "missing_skills": [],
     "strengths": [],
     "weaknesses": [],
     "suggestions": [],
     "interview_questions": []
 }}
 
+Generate:
+- 4-6 strengths
+- 3-5 weaknesses
+- 4-6 suggestions
+- 5 technical interview questions based on the resume.
+
 Resume:
+
 {resume_text}
 """
 
     try:
+
         response = client.models.generate_content(
             model=MODEL_NAME,
             contents=prompt,
@@ -48,32 +59,28 @@ Resume:
 
         response_text = response.text.strip()
 
-        if response_text.startswith("```json"):
+        if response_text.startswith("```"):
             response_text = (
-                response_text.replace("```json", "")
+                response_text
+                .replace("```json", "")
                 .replace("```", "")
                 .strip()
             )
 
-        return json.loads(response_text)
+        data = json.loads(response_text)
 
-    except json.JSONDecodeError:
         return {
-            "ats_score": 0,
-            "top_skills": [],
-            "missing_skills": [],
-            "strengths": [],
-            "weaknesses": [],
-            "suggestions": [],
-            "interview_questions": [],
-            "error": "AI returned invalid JSON"
+            "strengths": data.get("strengths", []),
+            "weaknesses": data.get("weaknesses", []),
+            "suggestions": data.get("suggestions", []),
+            "interview_questions": data.get("interview_questions", [])
         }
 
     except Exception as e:
+
+        print("AI Error:", e)
+
         return {
-            "ats_score": 0,
-            "top_skills": [],
-            "missing_skills": [],
             "strengths": [],
             "weaknesses": [],
             "suggestions": [],

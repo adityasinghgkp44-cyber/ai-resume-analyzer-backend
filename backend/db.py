@@ -12,3 +12,4 @@ client = MongoClient(MONGO_URI)
 db = client["ai_resume_analyzer"]
 users_collection = db["users"]
 resume_collection = db["resumes"]
+job_roles_collection = db["job_roles"]
