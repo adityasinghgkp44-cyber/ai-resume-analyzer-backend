@@ -88,6 +88,7 @@ def login():
 @app.route('/register', methods = ['POST'])
 def register():
     data =request.json
+    print (data)
     username = data.get('username')
     password = data.get('password')
     email = data.get('email')
