@@ -20,20 +20,19 @@ function Navbar() {
     <nav className="navbar">
 
       <div className="navbar-logo">
-
         <BrainCircuit size={34} />
-
         <span>AI Resume Analyzer</span>
-
       </div>
 
       <div className={`navbar-links ${menuOpen ? "active" : ""}`}>
 
-        <Link to="/">Home</Link>
+        <a href="#home">Home</a>
 
         <a href="#features">Features</a>
 
-        <a href="#about">About</a>
+        <a href="#how">How It Works</a>
+
+        <a href="#faq">FAQ</a>
 
         <a href="#contact">Contact</a>
 
@@ -52,7 +51,10 @@ function Navbar() {
           <>
             <Link to="/login">Login</Link>
 
-            <Link className="register-btn" to="/register">
+            <Link
+              className="register-btn"
+              to="/register"
+            >
               Register
             </Link>
           </>

@@ -1,11 +1,9 @@
 import "./Footer.css";
+
 import {
   BrainCircuit,
-  Github,
-  Linkedin,
   Mail,
-  Twitter,
-  ArrowRight
+  ArrowRight,
 } from "lucide-react";
 
 function Footer() {
@@ -29,23 +27,9 @@ function Footer() {
           </p>
 
           <div className="social-icons">
-
-            <a href="#">
-              <Github size={22}/>
-            </a>
-
-            <a href="#">
-              <Linkedin size={22}/>
-            </a>
-
-            <a href="#">
-              <Twitter size={22}/>
-            </a>
-
             <a href="mailto:your@email.com">
-              <Mail size={22}/>
+              <Mail size={22} />
             </a>
-
           </div>
 
         </div>
@@ -55,11 +39,8 @@ function Footer() {
           <h3>Quick Links</h3>
 
           <a href="#home">Home</a>
-
           <a href="#features">Features</a>
-
           <a href="#how">How It Works</a>
-
           <a href="#faq">FAQ</a>
 
         </div>
@@ -69,11 +50,8 @@ function Footer() {
           <h3>Resources</h3>
 
           <a href="#">Documentation</a>
-
           <a href="#">Privacy Policy</a>
-
           <a href="#">Terms & Conditions</a>
-
           <a href="#">Support</a>
 
         </div>
@@ -94,9 +72,7 @@ function Footer() {
             />
 
             <button>
-
-              <ArrowRight size={20}/>
-
+              <ArrowRight size={20} />
             </button>
 
           </div>
@@ -106,9 +82,7 @@ function Footer() {
       </div>
 
       <div className="copyright">
-
         © 2026 AI Resume Analyzer. All Rights Reserved.
-
       </div>
 
     </footer>

@@ -1,13 +1,13 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "http://127.0.0.1:5000",
+  baseURL: import.meta.env.VITE_API_URL,
   headers: {
     "Content-Type": "application/json",
   },
 });
 
-// Automatically attach JWT token
+// Attach JWT token automatically
 API.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem("token");
@@ -21,7 +21,7 @@ API.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Handle expired/invalid token
+// Handle expired token
 API.interceptors.response.use(
   (response) => response,
   (error) => {
@@ -29,7 +29,6 @@ API.interceptors.response.use(
       localStorage.removeItem("token");
       localStorage.removeItem("user");
 
-      // Redirect to login page
       window.location.href = "/login";
     }
 

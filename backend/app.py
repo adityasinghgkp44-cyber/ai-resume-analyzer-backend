@@ -4,6 +4,7 @@ from utils.candidate_classifier import detect_candidate_type
 from roadmap_service import generate_roadmap
 import jwt
 import datetime
+from flask_cors import CORS
 #from jd_matcher import match_resume_with_jd
 from ai_analysis import analyze_resume # Import the analyze_resume function from ai_analysis.py
 from flask import Flask, request, jsonify
@@ -21,6 +22,12 @@ from auth import token_required
 
 
 app = Flask(__name__)
+
+CORS(
+    app,
+    resources={r"/*": {"origins": "*"}},
+    supports_credentials=True
+)
 app.config['SECRET_KEY'] = 'SECRET_KEY'  # Change
 
 bcrypt = Bcrypt(app)
