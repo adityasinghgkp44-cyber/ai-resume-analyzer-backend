@@ -30,8 +30,7 @@ function History() {
   const [filter, setFilter] = useState("all");
 
   const [openDialog, setOpenDialog] = useState(false);
-  const [selectedResume, setSelectedResume] =
-    useState(null);
+  const [selectedResume, setSelectedResume] = useState(null);
 
   useEffect(() => {
     fetchHistory();
@@ -44,7 +43,7 @@ function History() {
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
-          "Failed to load history"
+        "Failed to load history"
       );
     } finally {
       setLoading(false);
@@ -55,25 +54,20 @@ function History() {
     if (!selectedResume) return;
 
     try {
-      await deleteResume(
-        selectedResume.resume_name
-      );
+      await deleteResume(selectedResume.resume_name);
 
       setHistory((prev) =>
         prev.filter(
           (item) =>
-            item.resume_name !==
-            selectedResume.resume_name
+            item.resume_name !== selectedResume.resume_name
         )
       );
 
-      toast.success(
-        "Resume deleted successfully"
-      );
+      toast.success("Resume deleted successfully");
     } catch (error) {
       toast.error(
         error.response?.data?.error ||
-          "Delete failed"
+        "Delete failed"
       );
     }
 
@@ -134,7 +128,6 @@ function History() {
 
           <div className="search-box">
             <Search size={18} />
-
             <input
               type="text"
               placeholder="Search Resume..."
@@ -151,131 +144,99 @@ function History() {
               setFilter(e.target.value)
             }
           >
-            <option value="all">
-              All Scores
-            </option>
-
-            <option value="high">
-              ATS ≥ 80
-            </option>
-
-            <option value="medium">
-              ATS 60 - 79
-            </option>
-
-            <option value="low">
-              ATS &lt; 60
-            </option>
+            <option value="all">All Scores</option>
+            <option value="high">ATS ≥ 80</option>
+            <option value="medium">ATS 60 - 79</option>
+            <option value="low">ATS &lt; 60</option>
           </select>
 
         </div>
 
         {filteredHistory.length === 0 ? (
           <div className="empty-history">
-
             <FileText size={80} />
-
             <h2>No Resume Found</h2>
-
-            <p>
-              Try changing the search or
-              filter options.
-            </p>
-
           </div>
         ) : (
           <div className="history-grid">
 
-            {filteredHistory.map(
-              (resume, index) => (
+            {filteredHistory.map((resume, index) => (
+
+              <div
+                className="history-card"
+                key={index}
+              >
+
+                <div className="history-header">
+                  <FileText />
+                  <h2>{resume.resume_name}</h2>
+                </div>
+
+                <div className="history-score">
+                  <Star />
+                  ATS Score
+                  <span>{resume.ats_score}%</span>
+                </div>
+
+                <div className="history-skills">
+
+                  {resume.matched_skills?.map(
+                    (skill, i) => (
+                      <span key={i}>
+                        {skill}
+                      </span>
+                    )
+                  )}
+
+                </div>
+
+                <div className="analysis-preview">
+
+                  <BrainCircuit size={18} />
+
+                  <p>
+                    {resume.analysis?.suggestions?.[0] ||
+                      "No suggestions available"}
+                  </p>
+
+                </div>
+
                 <div
-                  className="history-card"
-                  key={index}
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    marginTop: "20px",
+                  }}
                 >
-                  <div className="history-header">
-                    <FileText />
 
-                    <h2>
-                      {resume.resume_name}
-                    </h2>
-                  </div>
+                  <button
+                    className="view-btn"
+                    onClick={() =>
+                      navigate("/analysis", {
+                        state: resume,
+                      })
+                    }
+                  >
+                    <Eye size={18} />
+                    View Report
+                  </button>
 
-                  <div className="history-score">
-                    <Star />
-
-                    ATS Score
-
-                    <span>
-                      {resume.ats_score}%
-                    </span>
-                  </div>
-
-                  <div className="history-skills">
-                    {resume.skills?.map(
-                      (skill, i) => (
-                        <span key={i}>
-                          {skill}
-                        </span>
-                      )
-                    )}
-                  </div>
-
-                  <div className="analysis-preview">
-                    <BrainCircuit
-                      size={18}
-                    />
-
-                    <p>
-                      {resume.analysis
-                        ?.length > 180
-                        ? resume.analysis.substring(
-                            0,
-                            180
-                          ) + "..."
-                        : resume.analysis}
-                    </p>
-                  </div>
-
-                  <div
-                    style={{
-                      display: "flex",
-                      gap: "12px",
-                      marginTop: "20px",
+                  <button
+                    className="delete-btn"
+                    onClick={() => {
+                      setSelectedResume(resume);
+                      setOpenDialog(true);
                     }}
                   >
-                    <button
-                      className="view-btn"
-                      onClick={() =>
-                        navigate(
-                          "/resume-details",
-                          {
-                            state: resume,
-                          }
-                        )
-                      }
-                    >
-                      <Eye size={18} />
-                      View Report
-                    </button>
+                    <Trash2 size={18} />
+                    Delete
+                  </button>
 
-                    <button
-                      className="delete-btn"
-                      onClick={() => {
-                        setSelectedResume(
-                          resume
-                        );
-                        setOpenDialog(
-                          true
-                        );
-                      }}
-                    >
-                      <Trash2 size={18} />
-                      Delete
-                    </button>
-                  </div>
                 </div>
-              )
-            )}
+
+              </div>
+
+            ))}
 
           </div>
         )}

@@ -6,7 +6,6 @@ import DashboardLayout from "../../layouts/DashboardLayout";
 import {
   FileText,
   BrainCircuit,
-  Star,
   Target,
   ArrowLeft,
 } from "lucide-react";
@@ -16,48 +15,26 @@ import ATSGauge from "../../components/ATSGauge/ATSGauge";
 
 function ResumeDetails() {
   const navigate = useNavigate();
-  const location = useLocation();
-
-  const resume = location.state;
+  const { state: resume } = useLocation();
 
   if (!resume) {
     return (
       <DashboardLayout>
-        <div className="resume-empty">
-
-          <h2>No Resume Selected</h2>
-
-          <button
-            className="back-btn"
-            onClick={() => navigate("/history")}
-          >
-            <ArrowLeft size={18} />
-            Back to History
-          </button>
-
-        </div>
+        <h2>No Resume Selected</h2>
       </DashboardLayout>
     );
   }
 
   return (
     <DashboardLayout>
-
       <div
         className="resume-details-page"
         id="analysis-report"
       >
-
         <div className="details-header">
-
           <div>
-
             <h1>{resume.resume_name}</h1>
-
-            <p>
-              Complete AI Resume Analysis
-            </p>
-
+            <p>{resume.role}</p>
           </div>
 
           <button
@@ -67,7 +44,6 @@ function ResumeDetails() {
             <ArrowLeft size={18} />
             Back
           </button>
-
         </div>
 
         <div className="details-grid">
@@ -75,16 +51,11 @@ function ResumeDetails() {
           <div className="glass-card ats-card">
 
             <h2>
-
               <Target />
-
               ATS Score
-
             </h2>
 
-            <ATSGauge
-              score={resume.ats_score}
-            />
+            <ATSGauge score={resume.ats_score} />
 
             <h3>{resume.ats_score}%</h3>
 
@@ -93,105 +64,111 @@ function ResumeDetails() {
           <div className="glass-card">
 
             <h2>
-
               <FileText />
-
-              Resume Information
-
+              Resume Info
             </h2>
 
-            <div className="resume-info">
+            <p>
+              <strong>Candidate Type:</strong>{" "}
+              {resume.candidate_type}
+            </p>
 
-              <p>
+            <p>
+              <strong>Role:</strong> {resume.role}
+            </p>
 
-                <strong>File:</strong>
+            <p>
+              <strong>Matched Skills:</strong>{" "}
+              {resume.matched_skills?.length || 0}
+            </p>
 
-                {resume.resume_name}
-
-              </p>
-
-              <p>
-
-                <strong>Detected Skills:</strong>
-
-                {resume.skills.length}
-
-              </p>
-
-              <p>
-
-                <strong>ATS Score:</strong>
-
-                {resume.ats_score}%
-
-              </p>
-
-            </div>
+            <p>
+              <strong>Missing Skills:</strong>{" "}
+              {resume.missing_skills?.length || 0}
+            </p>
 
           </div>
 
         </div>
 
         <div className="glass-card">
-
-          <h2>
-
-            <Star />
-
-            Skills
-
-          </h2>
+          <h2>Matched Skills</h2>
 
           <div className="skills-container">
-
-            {resume.skills.map((skill, index) => (
-
+            {resume.matched_skills?.map((skill, index) => (
               <span
-                className="skill-chip"
                 key={index}
+                className="skill-chip"
               >
                 {skill}
               </span>
-
             ))}
-
           </div>
-
         </div>
 
         <div className="glass-card">
+          <h2>Missing Skills</h2>
 
+          <div className="skills-container">
+            {resume.missing_skills?.map((skill, index) => (
+              <span
+                key={index}
+                className="skill-chip missing"
+              >
+                {skill}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div className="glass-card">
           <h2>
-
             <BrainCircuit />
-
-            AI Analysis
-
+            Strengths
           </h2>
 
-          <p className="analysis-text">
+          <ul>
+            {resume.analysis?.strengths?.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
 
-            {resume.analysis}
+        <div className="glass-card">
+          <h2>Weaknesses</h2>
 
-          </p>
+          <ul>
+            {resume.analysis?.weaknesses?.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
 
+        <div className="glass-card">
+          <h2>Suggestions</h2>
+
+          <ul>
+            {resume.analysis?.suggestions?.map((item, index) => (
+              <li key={index}>{item}</li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="glass-card">
+          <h2>Interview Questions</h2>
+
+          <ul>
+            {resume.analysis?.interview_questions?.map(
+              (item, index) => (
+                <li key={index}>{item}</li>
+              )
+            )}
+          </ul>
         </div>
 
         <div className="action-buttons">
 
-          <ExportPDF
-            targetId="analysis-report"
-          />
-
-          <button
-            onClick={() =>
-              navigate("/match-jd", {
-                state: resume,
-              })
-            }
-          >
-            Match Job Description
-          </button>
+          <ExportPDF targetId="analysis-report" />
 
           <button
             onClick={() =>
@@ -200,13 +177,11 @@ function ResumeDetails() {
               })
             }
           >
-            Generate Roadmap
+            View Roadmap
           </button>
 
         </div>
-
       </div>
-
     </DashboardLayout>
   );
 }

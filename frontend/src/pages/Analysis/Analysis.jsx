@@ -3,14 +3,8 @@ import "./Analysis.css";
 import { useLocation, useNavigate } from "react-router-dom";
 import DashboardLayout from "../../layouts/DashboardLayout";
 
-import {
-  CheckCircle,
-  BrainCircuit,
-  Target,
-  Briefcase,
-} from "lucide-react";
-
 function Analysis() {
+
   const { state } = useLocation();
   const navigate = useNavigate();
 
@@ -31,88 +25,80 @@ function Analysis() {
     );
   }
 
-  const {
-    analysis,
-    skills,
-    ats_score,
-  } = state;
-
   return (
     <DashboardLayout>
+
       <div className="analysis-page">
 
-        <div className="score-card">
+        <h1>Resume Analysis</h1>
 
-          <Target size={35} />
+        <h2>ATS Score</h2>
+        <h3>{state.ats_score}%</h3>
 
-          <h2>ATS Score</h2>
+        <hr />
 
-          <div className="score-circle">
-            {ats_score}%
-          </div>
+        <h2>Matched Skills</h2>
 
-        </div>
+        <ul>
+          {state.matched_skills?.map((skill, index) => (
+            <li key={index}>{skill}</li>
+          ))}
+        </ul>
 
-        <div className="analysis-grid">
+        <h2>Missing Skills</h2>
 
-          <div className="glass-card">
+        <ul>
+          {state.missing_skills?.map((skill, index) => (
+            <li key={index}>{skill}</li>
+          ))}
+        </ul>
 
-            <h2>
-              <BrainCircuit size={22} />
-              AI Analysis
-            </h2>
+        <h2>Strengths</h2>
 
-            <p className="analysis-text">
-              {analysis}
-            </p>
+        <ul>
+          {state.analysis?.strengths?.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
 
-          </div>
+        <h2>Weaknesses</h2>
 
-          <div className="glass-card">
+        <ul>
+          {state.analysis?.weaknesses?.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
 
-            <h2>
-              <CheckCircle size={22} />
-              Skills Detected
-            </h2>
+        <h2>Suggestions</h2>
 
-            <div className="skills-grid">
+        <ul>
+          {state.analysis?.suggestions?.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
 
-              {skills &&
-                skills.map((skill, index) => (
-                  <span
-                    key={index}
-                    className="skill-chip"
-                  >
-                    {skill}
-                  </span>
-                ))}
+        <h2>Interview Questions</h2>
 
-            </div>
+        <ul>
+          {state.analysis?.interview_questions?.map((item, index) => (
+            <li key={index}>{item}</li>
+          ))}
+        </ul>
 
-          </div>
+        <h2>Roadmap</h2>
 
-        </div>
-
-        <div className="action-card">
-
-          <h2>Next Step</h2>
-
-          <p>
-            Compare your resume against a Job
-            Description and discover missing skills.
-          </p>
-
-          <button
-            className="analysis-btn"
-            onClick={() => navigate("/match-jd")}
-          >
-            <Briefcase size={18} />
-            Match Job Description
-          </button>
-
-        </div>
+        <ul>
+          {state.roadmap?.map((item, index) => (
+            <li key={index}>
+              {typeof item === "string"
+                ? item
+                : JSON.stringify(item)}
+            </li>
+          ))}
+        </ul>
 
       </div>
+
     </DashboardLayout>
   );
 }
