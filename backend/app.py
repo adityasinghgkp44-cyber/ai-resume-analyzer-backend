@@ -36,7 +36,7 @@ bcrypt = Bcrypt(app)
 def login():
 
     data = request.json
-
+    print("LOGIN DATA:", request.get_json())
     email = data.get("email")
     password = data.get("password")
 
