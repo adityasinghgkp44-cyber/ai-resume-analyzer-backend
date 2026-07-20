@@ -43,7 +43,7 @@ function Register() {
 
     try {
       setLoading(true);
-
+      console.log("FORM:", form);
       const response = await registerUser(form);
 
       toast.success(

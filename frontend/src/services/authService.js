@@ -10,6 +10,8 @@ export const loginUser = async (email, password) => {
 };
 
 export const registerUser = async (userData) => {
+  console.log("REGISTER PAYLOAD:", userData);
+
   const response = await API.post("/register", userData);
 
   return response.data;
