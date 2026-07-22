@@ -50,7 +50,7 @@ function Topbar() {
         <div className="profile-mini">
 
           <div className="avatar">
-            {user?.username?.charAt(0).toUpperCase() || "U"}
+           {(user?.username?.charAt(0) || "U").toUpperCase()}
           </div>
 
           <div>
