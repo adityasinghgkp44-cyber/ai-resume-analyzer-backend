@@ -58,7 +58,9 @@ function Dashboard() {
       </DashboardLayout>
     );
   }
-
+   console.log("Dashboard:", dashboard);
+console.log("History:", dashboard?.history);
+console.log("History is array:", Array.isArray(dashboard?.history));
   const chartData =
     dashboard.history.map(
       (resume, index) => ({
