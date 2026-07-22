@@ -1,9 +1,16 @@
 import DashboardLayout from "../../layouts/DashboardLayout";
+import StatCard from "../../components/StatCard/StatCard";
+import { Target } from "lucide-react";
 
 function Dashboard() {
   return (
     <DashboardLayout>
-      <h1>Dashboard Working ✅</h1>
+      <StatCard
+        title="Average ATS"
+        value={0}
+        color="#ff6a00"
+        icon={<Target />}
+      />
     </DashboardLayout>
   );
 }
